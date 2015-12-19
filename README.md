@@ -46,6 +46,7 @@ H1 = SQHamiltonian[
 ```
 This may seems odd here but in Mathematica it is displayed in the way of writing phyiscs equations.
 ![](http://luyan.in/snippet.png)
+
 Note that the double stars mean non-commutable multiplication.
 
 ####Initial state
