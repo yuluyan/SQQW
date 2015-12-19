@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[      8697,        239]
-NotebookOptionsPosition[      8299,        222]
-NotebookOutlinePosition[      8641,        237]
-CellTagsIndexPosition[      8598,        234]
+NotebookDataLength[      8746,        240]
+NotebookOptionsPosition[      8348,        223]
+NotebookOutlinePosition[      8690,        238]
+CellTagsIndexPosition[      8647,        235]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -173,7 +173,7 @@ Cell[BoxData[{
     RowBox[{"H1CorelationHalf", "[", "t", "]"}], "]"}]}], ";"}]}], "Input"],
 
 Cell[BoxData[
- RowBox[{"Manipulate", "[", "\[IndentingNewLine]", 
+ RowBox[{"Animate", "[", "\[IndentingNewLine]", 
   RowBox[{
    RowBox[{"MatrixPlot", "[", "\[IndentingNewLine]", 
     RowBox[{
@@ -218,7 +218,8 @@ Cell[BoxData[
  CellChangeTimes->{
   3.6593548301559153`*^9, {3.6593558035048313`*^9, 3.659355803665455*^9}, {
    3.6593577886113834`*^9, 3.6593577887950487`*^9}, {3.6593579753681355`*^9, 
-   3.659358008240636*^9}, 3.6593583805883455`*^9}]
+   3.659358008240636*^9}, 3.6593583805883455`*^9, {3.659508595091962*^9, 
+   3.6595085971636534`*^9}}]
 },
 WindowSize->{927, 1028},
 WindowMargins->{{-7, Automatic}, {Automatic, 0}},
@@ -240,7 +241,7 @@ Cell[558, 20, 900, 17, 72, "Input"],
 Cell[1461, 39, 2829, 65, 74, "Input"],
 Cell[4293, 106, 938, 27, 76, "Input"],
 Cell[5234, 135, 1250, 37, 112, "Input"],
-Cell[6487, 174, 1808, 46, 172, "Input"]
+Cell[6487, 174, 1857, 47, 172, "Input"]
 }
 ]
 *)
