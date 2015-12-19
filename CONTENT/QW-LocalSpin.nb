@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     18048,        497]
-NotebookOptionsPosition[     17645,        480]
-NotebookOutlinePosition[     17989,        495]
-CellTagsIndexPosition[     17946,        492]
+NotebookDataLength[     12516,        356]
+NotebookOptionsPosition[     12115,        339]
+NotebookOutlinePosition[     12459,        354]
+CellTagsIndexPosition[     12416,        351]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -39,7 +39,7 @@ Cell[BoxData[{
 
 Cell[BoxData[{
  RowBox[{
-  RowBox[{"gridSizeL", "=", "5"}], ";", 
+  RowBox[{"gridSizeL", "=", "10"}], ";", 
   RowBox[{"particalType", "=", "\"\<Boson\>\""}], 
   ";"}], "\[IndentingNewLine]", 
  RowBox[{
@@ -107,7 +107,7 @@ Cell[BoxData[{
              RowBox[{"l", "+", "1"}], ",", "s"}], "}"}]]}]}], ",", 
         RowBox[{"{", 
          RowBox[{"l", ",", "s"}], "}"}]}], "]"}]}], "+", 
-     RowBox[{"1", " ", 
+     RowBox[{"50", 
       RowBox[{"HInfiniteSum", "[", 
        RowBox[{
         RowBox[{
@@ -125,7 +125,10 @@ Cell[BoxData[{
   3.6594023079670796`*^9, {3.659404878274123*^9, 3.659404948954323*^9}, {
    3.6594050320581913`*^9, 3.659405037967924*^9}, {3.6594071498002253`*^9, 
    3.659407161361761*^9}, {3.659407214272726*^9, 3.659407253430898*^9}, 
-   3.6594074450928507`*^9}],
+   3.6594074450928507`*^9, {3.6595064963270893`*^9, 3.659506497364275*^9}, 
+   3.65950656817927*^9, {3.659506633259477*^9, 3.6595066444265013`*^9}, {
+   3.659506743321577*^9, 3.659506743920847*^9}, 3.6595074941153603`*^9, 
+   3.6595075268820915`*^9, {3.6595075871376314`*^9, 3.6595076097354345`*^9}}],
 
 Cell[BoxData[
  RowBox[{
@@ -250,23 +253,18 @@ Cell[BoxData[{
  CellChangeTimes->{{3.6594049878166227`*^9, 3.659404988104641*^9}}],
 
 Cell[BoxData[
- RowBox[{"Grid", "[", 
-  RowBox[{"{", "\[IndentingNewLine]", 
-   RowBox[{
-    RowBox[{"{", "\[IndentingNewLine]", 
+ RowBox[{"Manipulate", "[", "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"Grid", "@", 
+    RowBox[{"Map", "[", "\[IndentingNewLine]", 
      RowBox[{
-      RowBox[{"Manipulate", "[", "\[IndentingNewLine]", 
-       RowBox[{
+      RowBox[{"Function", "[", 
+       RowBox[{"spin", ",", "\[IndentingNewLine]", 
         RowBox[{"MatrixPlot", "[", "\[IndentingNewLine]", 
          RowBox[{
           RowBox[{"Chop", "@", 
            RowBox[{"H2Corelation", "[", 
-            RowBox[{"t", ",", 
-             RowBox[{"{", 
-              RowBox[{
-               RowBox[{"1", "/", "2"}], ",", 
-               RowBox[{"1", "/", "2"}]}], "}"}]}], "]"}]}], ",", 
-          "\[IndentingNewLine]", 
+            RowBox[{"t", ",", "spin"}], "]"}]}], ",", "\[IndentingNewLine]", 
           RowBox[{"DataReversed", "\[Rule]", 
            RowBox[{"{", 
             RowBox[{"True", ",", "False"}], "}"}]}], ",", 
@@ -302,184 +300,45 @@ Cell[BoxData[
                RowBox[{"{", 
                 RowBox[{"i", ",", 
                  RowBox[{"-", "gridSizeL"}], ",", "gridSizeL", ",", "5"}], 
-                "}"}]}], "]"}]}], "}"}]}]}], "\[IndentingNewLine]", "]"}], 
-        ",", 
+                "}"}]}], "]"}]}], "}"}]}]}], "\[IndentingNewLine]", "]"}]}], 
+       "\[IndentingNewLine]", "]"}], ",", "\[IndentingNewLine]", 
+      RowBox[{"{", 
+       RowBox[{
         RowBox[{"{", 
-         RowBox[{"t", ",", "0", ",", "4"}], "}"}]}], "]"}], ",", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"1", "/", "2"}], ",", 
+            RowBox[{"1", "/", "2"}]}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"1", "/", "2"}], ",", 
+            RowBox[{
+             RowBox[{"-", "1"}], "/", "2"}]}], "}"}]}], "}"}], ",", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"-", "1"}], "/", "2"}], ",", 
+            RowBox[{"1", "/", "2"}]}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"-", "1"}], "/", "2"}], ",", 
+            RowBox[{
+             RowBox[{"-", "1"}], "/", "2"}]}], "}"}]}], "}"}]}], "}"}], ",", 
       "\[IndentingNewLine]", 
-      RowBox[{"Manipulate", "[", "\[IndentingNewLine]", 
-       RowBox[{
-        RowBox[{"MatrixPlot", "[", "\[IndentingNewLine]", 
-         RowBox[{
-          RowBox[{"Chop", "@", 
-           RowBox[{"H2Corelation", "[", 
-            RowBox[{"t", ",", 
-             RowBox[{"{", 
-              RowBox[{
-               RowBox[{"1", "/", "2"}], ",", 
-               RowBox[{
-                RowBox[{"-", "1"}], "/", "2"}]}], "}"}]}], "]"}]}], ",", 
-          "\[IndentingNewLine]", 
-          RowBox[{"DataReversed", "\[Rule]", 
-           RowBox[{"{", 
-            RowBox[{"True", ",", "False"}], "}"}]}], ",", 
-          "\[IndentingNewLine]", 
-          RowBox[{"ColorFunction", "\[Rule]", 
-           RowBox[{"(", 
-            RowBox[{
-             RowBox[{"Hue", "[", 
-              RowBox[{
-               RowBox[{
-                RowBox[{"(", 
-                 RowBox[{"1", "-", "#"}], ")"}], "^", "0.23"}], "*", "0.83"}],
-               "]"}], "&"}], ")"}]}], ",", "\[IndentingNewLine]", 
-          RowBox[{"FrameTicks", "\[Rule]", 
-           RowBox[{"{", 
-            RowBox[{
-             RowBox[{"Table", "[", 
-              RowBox[{
-               RowBox[{"{", 
-                RowBox[{
-                 RowBox[{"i", "+", "gridSizeL", "+", "1"}], ",", "i"}], "}"}],
-                ",", 
-               RowBox[{"{", 
-                RowBox[{"i", ",", 
-                 RowBox[{"-", "gridSizeL"}], ",", "gridSizeL", ",", "5"}], 
-                "}"}]}], "]"}], ",", 
-             RowBox[{"Table", "[", 
-              RowBox[{
-               RowBox[{"{", 
-                RowBox[{
-                 RowBox[{"i", "+", "gridSizeL", "+", "1"}], ",", "i"}], "}"}],
-                ",", "\[IndentingNewLine]", 
-               RowBox[{"{", 
-                RowBox[{"i", ",", 
-                 RowBox[{"-", "gridSizeL"}], ",", "gridSizeL", ",", "5"}], 
-                "}"}]}], "]"}]}], "}"}]}]}], "\[IndentingNewLine]", "]"}], 
-        ",", 
-        RowBox[{"{", 
-         RowBox[{"t", ",", "0", ",", "4"}], "}"}]}], "]"}]}], 
-     "\[IndentingNewLine]", "}"}], ",", "\[IndentingNewLine]", 
-    RowBox[{"{", "\[IndentingNewLine]", 
-     RowBox[{
-      RowBox[{"Manipulate", "[", "\[IndentingNewLine]", 
-       RowBox[{
-        RowBox[{"MatrixPlot", "[", "\[IndentingNewLine]", 
-         RowBox[{
-          RowBox[{"Chop", "@", 
-           RowBox[{"H2Corelation", "[", 
-            RowBox[{"t", ",", 
-             RowBox[{"{", 
-              RowBox[{
-               RowBox[{
-                RowBox[{"-", "1"}], "/", "2"}], ",", 
-               RowBox[{"1", "/", "2"}]}], "}"}]}], "]"}]}], ",", 
-          "\[IndentingNewLine]", 
-          RowBox[{"DataReversed", "\[Rule]", 
-           RowBox[{"{", 
-            RowBox[{"True", ",", "False"}], "}"}]}], ",", 
-          "\[IndentingNewLine]", 
-          RowBox[{"ColorFunction", "\[Rule]", 
-           RowBox[{"(", 
-            RowBox[{
-             RowBox[{"Hue", "[", 
-              RowBox[{
-               RowBox[{
-                RowBox[{"(", 
-                 RowBox[{"1", "-", "#"}], ")"}], "^", "0.23"}], "*", "0.83"}],
-               "]"}], "&"}], ")"}]}], ",", "\[IndentingNewLine]", 
-          RowBox[{"FrameTicks", "\[Rule]", 
-           RowBox[{"{", 
-            RowBox[{
-             RowBox[{"Table", "[", 
-              RowBox[{
-               RowBox[{"{", 
-                RowBox[{
-                 RowBox[{"i", "+", "gridSizeL", "+", "1"}], ",", "i"}], "}"}],
-                ",", 
-               RowBox[{"{", 
-                RowBox[{"i", ",", 
-                 RowBox[{"-", "gridSizeL"}], ",", "gridSizeL", ",", "5"}], 
-                "}"}]}], "]"}], ",", 
-             RowBox[{"Table", "[", 
-              RowBox[{
-               RowBox[{"{", 
-                RowBox[{
-                 RowBox[{"i", "+", "gridSizeL", "+", "1"}], ",", "i"}], "}"}],
-                ",", "\[IndentingNewLine]", 
-               RowBox[{"{", 
-                RowBox[{"i", ",", 
-                 RowBox[{"-", "gridSizeL"}], ",", "gridSizeL", ",", "5"}], 
-                "}"}]}], "]"}]}], "}"}]}]}], "\[IndentingNewLine]", "]"}], 
-        ",", 
-        RowBox[{"{", 
-         RowBox[{"t", ",", "0", ",", "4"}], "}"}]}], "]"}], ",", 
-      "\[IndentingNewLine]", 
-      RowBox[{"Manipulate", "[", "\[IndentingNewLine]", 
-       RowBox[{
-        RowBox[{"MatrixPlot", "[", "\[IndentingNewLine]", 
-         RowBox[{
-          RowBox[{"Chop", "@", 
-           RowBox[{"H2Corelation", "[", 
-            RowBox[{"t", ",", 
-             RowBox[{"{", 
-              RowBox[{
-               RowBox[{
-                RowBox[{"-", "1"}], "/", "2"}], ",", 
-               RowBox[{
-                RowBox[{"-", "1"}], "/", "2"}]}], "}"}]}], "]"}]}], ",", 
-          "\[IndentingNewLine]", 
-          RowBox[{"DataReversed", "\[Rule]", 
-           RowBox[{"{", 
-            RowBox[{"True", ",", "False"}], "}"}]}], ",", 
-          "\[IndentingNewLine]", 
-          RowBox[{"ColorFunction", "\[Rule]", 
-           RowBox[{"(", 
-            RowBox[{
-             RowBox[{"Hue", "[", 
-              RowBox[{
-               RowBox[{
-                RowBox[{"(", 
-                 RowBox[{"1", "-", "#"}], ")"}], "^", "0.23"}], "*", "0.83"}],
-               "]"}], "&"}], ")"}]}], ",", "\[IndentingNewLine]", 
-          RowBox[{"FrameTicks", "\[Rule]", 
-           RowBox[{"{", 
-            RowBox[{
-             RowBox[{"Table", "[", 
-              RowBox[{
-               RowBox[{"{", 
-                RowBox[{
-                 RowBox[{"i", "+", "gridSizeL", "+", "1"}], ",", "i"}], "}"}],
-                ",", 
-               RowBox[{"{", 
-                RowBox[{"i", ",", 
-                 RowBox[{"-", "gridSizeL"}], ",", "gridSizeL", ",", "5"}], 
-                "}"}]}], "]"}], ",", 
-             RowBox[{"Table", "[", 
-              RowBox[{
-               RowBox[{"{", 
-                RowBox[{
-                 RowBox[{"i", "+", "gridSizeL", "+", "1"}], ",", "i"}], "}"}],
-                ",", "\[IndentingNewLine]", 
-               RowBox[{"{", 
-                RowBox[{"i", ",", 
-                 RowBox[{"-", "gridSizeL"}], ",", "gridSizeL", ",", "5"}], 
-                "}"}]}], "]"}]}], "}"}]}]}], "\[IndentingNewLine]", "]"}], 
-        ",", 
-        RowBox[{"{", 
-         RowBox[{"t", ",", "0", ",", "4"}], "}"}]}], "]"}]}], 
-     "\[IndentingNewLine]", "}"}]}], "\[IndentingNewLine]", "}"}], 
-  "]"}]], "Input",
- CellChangeTimes->{
-  3.6593548301559153`*^9, {3.6593558035048313`*^9, 3.659355803665455*^9}, {
-   3.6593577886113834`*^9, 3.6593577887950487`*^9}, {3.6593579753681355`*^9, 
-   3.659358008240636*^9}, 3.6593583805883455`*^9, 3.6593590010736446`*^9, {
-   3.6593601521516037`*^9, 3.659360153375353*^9}, {3.6593601892190466`*^9, 
-   3.6593601927674084`*^9}, {3.659360558178883*^9, 3.659360559715745*^9}, {
-   3.6593608614961786`*^9, 3.659360919213154*^9}}]
+      RowBox[{"{", "2", "}"}]}], "\[IndentingNewLine]", "]"}]}], ",", 
+   "\[IndentingNewLine]", 
+   RowBox[{"{", 
+    RowBox[{"t", ",", "0", ",", "4"}], "}"}]}], "]"}]], "Input",
+ CellChangeTimes->{{3.6595072624510765`*^9, 3.659507299115563*^9}, {
+  3.6595073491706085`*^9, 3.6595073745698814`*^9}, {3.659507415466976*^9, 
+  3.659507470369013*^9}}]
 },
-WindowSize->{927, 1021},
-WindowMargins->{{Automatic, 308}, {Automatic, 55}},
+WindowSize->{1858, 1037},
+WindowMargins->{{-8, Automatic}, {Automatic, -8}},
 FrontEndVersion->"10.2 for Microsoft Windows (64-bit) (July 29, 2015)",
 StyleDefinitions->"Default.nb"
 ]
@@ -495,10 +354,10 @@ CellTagsIndex->{}
 (*NotebookFileOutline
 Notebook[{
 Cell[558, 20, 898, 17, 72, "Input"],
-Cell[1459, 39, 2982, 88, 196, "Input"],
-Cell[4444, 129, 1700, 45, 76, "Input"],
-Cell[6147, 176, 2504, 73, 132, "Input"],
-Cell[8654, 251, 8987, 227, 852, "Input"]
+Cell[1459, 39, 3252, 91, 174, "Input"],
+Cell[4714, 132, 1700, 45, 33, "Input"],
+Cell[6417, 179, 2504, 73, 92, "Input"],
+Cell[8924, 254, 3187, 83, 312, "Input"]
 }
 ]
 *)
