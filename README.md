@@ -44,8 +44,10 @@ H1 = SQHamiltonian[
   +5 HInfiniteSum[Subscript[n, l + 1] ** Subscript[n, l], {l}]
    ];
 ```
-This may seems odd here but in Mathematica it is displayed in the way of writing phyiscs equations. Note that the double stars mean non-commutable multiplication.
+This may seems odd here but in Mathematica it is displayed in the way of writing phyiscs equations.
 ![](http://luyan.in/snippet.png)
+Note that the double stars mean non-commutable multiplication.
+
 ####Initial state
 ```Mathematica
 Initial = SQInitial[0.5 InitialTerm[{0, 1}] + 0.5 InitialTerm[{2, 3}]];
