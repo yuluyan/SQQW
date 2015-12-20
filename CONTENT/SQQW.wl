@@ -9,7 +9,7 @@
 (*
 	This Mathematica package contains a set of useful tools 
 	and functionalities which can be used to perform numeric 
-	calculates of Quantum Walk inthe form of Second Quanti-
+	calculations of Quantum Walk in the form of Second Quanti-
 	zation. This package works for a wide range of Hamitonians 
 	and Initial Conditions.
 	This package is still under construction. Please contact
@@ -66,9 +66,6 @@ LinearMappingEncodeFunction::usage="Return an encoding function for multiple ind
 LinearMappingDecodeFunction::nomatch="Numbers of variables and ranges do not match.";
 LinearMappingDecodeFunction::usage="Return a decoding function for multiple indexes.";
 
-progressBar::usage="Labeled dynamic progress bar.";
-MonitorMap::usage="Map with dynamic monitoring progress bar.";
-
 SQInitialCalculate::noimpl="This type has not been implemented.";
 SQInitialCalculate::exprtype="Unknown type of expression: `1`.";
 SQInitialCalculate::usage="Calculate vector of Initial.";
@@ -77,7 +74,13 @@ SQInitial::usage="Wrapper for Initial.";
 InitialTerm::usage="Wrapper for term in Initial.";
 InitialInfiniteSum::usage="Wrapper for infinite sum in Initial.";
 
+Options[SQHamiltonialEvolve]={EnableParallel->False};
+SetOptions[SQHamiltonialEvolve,EnableParallel->False];
 SQHamiltonialEvolve::usage="Evolve the Hamiltonian accordingly.";
+
+progressBar::usage="Labeled dynamic progress bar.";
+MonitorMap::usage="Map with dynamic monitoring progress bar.";
+MonitorParallelMap::usage="ParallelMap with dynamic monitoring progress bar.";
 
 
 Begin["`Private`"];
@@ -385,11 +388,11 @@ Module[{},
 SyntaxInformation[InitialInfiniteSum]={"ArgumentsPattern"->{_,_},"LocalVariables"->{"Solve",{2}}};
 
 
-SyntaxInformation[SQHamiltonialEvolve]={"ArgumentsPattern"->{_,_,_,_,_,_},"LocalVariables"->{"Solve",{5,6}}};
-SQHamiltonialEvolve[H_SQHamiltonian,particalType_String,initialState_SQInitial,base_,vars_List,{varRanges__List}]:=
+SyntaxInformation[SQHamiltonialEvolve]={"ArgumentsPattern"->{_,_,_,_,_,_,OptionsPattern[]},"LocalVariables"->{"Solve",{5,6}}};
+SQHamiltonialEvolve[H_SQHamiltonian,particalType_String,initialState_SQInitial,base_,vars_List,{varRanges__List},OptionsPattern[]]:=
 Module[{
 	$tempVars=ToExpression["$$$$"<>ToString[#]]&/@vars,
-	HEncodeFunction,HDecodeFunction,HFunction,HBase,HMatrix,HInitial,Hs,Hj,HEvolution,HWaveFunction
+	HEncodeFunction,HDecodeFunction,HFunction,HBase,HMatrix,HInitial,Hs,Hj,HEvolution,HWaveFunction,UsedMap,DisplayLabel
 	},
 	HEncodeFunction=LinearMappingEncodeFunction[Evaluate@vars,varRanges];
 	HDecodeFunction=LinearMappingDecodeFunction[Evaluate@vars,varRanges];
@@ -398,14 +401,44 @@ Module[{
 				Evaluate@SQHCalculate[H,Evaluate@{NonCommutativeMultiply@@Reverse[List@@((Hold[base]/.Thread[Rule[vars,$tempVars]])/.{SQQW`Private`Creation->SQQW`Private`Annihilation})],base},particalType,If[#1==#2,1,0]&]
 				];
 	HBase=Flatten[Table[vars,varRanges],Length[vars]-1];
-	HMatrix=MonitorMap[
-				"Constructing Hamiltonian Matrix: ",
+	Switch[OptionValue[EnableParallel],
+	True,
+	If[Length[Kernels[]]==0,LaunchKernels[]];
+	UsedMap=MonitorParallelMap;DisplayLabel="Constructing Hamiltonian Matrix (" <> ToString@Length[Kernels[]] <> "-Kernel Parallel): ";,
+	_,
+	UsedMap=MonitorMap;DisplayLabel="Constructing Hamiltonian Matrix: ";
+	];
+	HMatrix=UsedMap[
+				DisplayLabel,
 				HFunction@@Flatten[#]&,
 				Evaluate@Outer[List,HBase,HBase,1],
 				{2}
 				][[2]];
+	If[OptionValue[EnableParallel],CloseKernels[]];
+	NotebookFind[SelectedNotebook[],Uncompress["1:eJxTTMoPCpZnYGBwzs8rLikqTS7JzEtX8EjMzcwpyc/LTMxT8E0sKcqsAAAERA3j"],All,CellContents];
+	NotebookDelete[];
+	CellPrint[
+		CellGroup[{
+			Row[{
+				TextCell["                ","Text"],
+				TextCell["Constructing Hamiltonian Finished. Decomposing Matrix...","Subsection"]
+			}]
+		}]
+	];
 	HInitial=SQInitialCalculate[initialState,HEncodeFunction,HBase,Dimensions[HMatrix][[1]]];
-	{Hs,Hj}=SchurDecomposition[N@HMatrix];HEvolution[t_]=MapIndexed[If[Equal@@#2,Exp[-I #1 t],#1]&,Hj,{2}];HWaveFunction[t_]:=Hs.(HEvolution[t].(Conjugate[Transpose[Hs]].(N@HInitial)));
+	{Hs,Hj}=SchurDecomposition[N@HMatrix];
+	NotebookFind[SelectedNotebook[],Uncompress["1:eJxTTMoPChZiYGBwSU3Ozy3IL87MS1fwTSwpyqwAAGs+CLc="],All,CellContents];
+	NotebookDelete[];
+	HEvolution[t_]=MapIndexed[If[Equal@@#2,Exp[-I #1 t],#1]&,Hj,{2}];
+	HWaveFunction[t_]:=Hs.(HEvolution[t].(Conjugate[Transpose[Hs]].(N@HInitial)));
+	CellPrint[
+		CellGroup[{
+			Row[{
+				TextCell["                ","Text"],
+				TextCell["Succeeded!","Subsection"]
+			}]
+		}]
+	];
 	{
 		{Function[Evaluate@vars,HEncodeFunction@@vars],Function[c,HDecodeFunction@c]},
 		HBase,
@@ -415,13 +448,16 @@ Module[{
 
 
 progressBar[dyn:Dynamic[var_],total_,label_String]:=
-Print[
-	Row[{
-		label,
-		ProgressIndicator[dyn,{0,total}],
-		" ",
-		Dynamic@NumberForm[100. var/total,{\[Infinity],2}],
-		"%"
+CellPrint[
+	CellGroup[{
+		Row[{
+			TextCell["                ","Text"],
+			TextCell[label,"Subsection"],
+			ExpressionCell[ProgressIndicator[dyn,{0,total}]],
+			TextCell[" ","Subsection"],
+			TextCell[Dynamic@NumberForm[100. var/total,{\[Infinity],2}],"Subsection"],
+			TextCell["%","Subsection"]
+		}]
 	}]
 ];
 
@@ -429,6 +465,19 @@ MonitorMap[progressLabel_String,f_,expr_,levelspec_:{1}]:=
 DynamicModule[{$monitor=0,$total=Length[Level[expr,levelspec]]},
 	progressBar[Dynamic[$monitor],$total,progressLabel];
 	Map[($monitor++;f[#])&,expr,levelspec]
+];
+
+MonitorParallelMap[progressLabel_String,f_,expr_,levelspec_:{1}]:=
+DynamicModule[{$total=Length[Level[expr,levelspec]],$monitor=0,$localmonitor,$monitorstep},
+	progressBar[Dynamic[$monitor],$total,progressLabel];
+	$monitorstep=IntegerPart[$total/4/100];
+	SetSharedVariable[$monitor];
+	ParallelEvaluate[$localmonitor=1;];
+	ParallelMap[
+		(If[$localmonitor>=100,$monitor+=$localmonitor;$localmonitor=1,$localmonitor++];f[#])&,
+		expr,
+		levelspec
+	]
 ];
 
 
