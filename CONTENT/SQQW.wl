@@ -74,9 +74,13 @@ SQInitial::usage="Wrapper for Initial.";
 InitialTerm::usage="Wrapper for term in Initial.";
 InitialInfiniteSum::usage="Wrapper for infinite sum in Initial.";
 
-Options[SQHamiltonialEvolve]={EnableParallel->False};
-SetOptions[SQHamiltonialEvolve,EnableParallel->False];
+Options[SQHamiltonialEvolve]={Method->"CPU"};
+SetOptions[SQHamiltonialEvolve,Method->"CPU"];
 SQHamiltonialEvolve::usage="Evolve the Hamiltonian accordingly.";
+
+ToSymbolicDelta::exprtype="Unknown type of expression: `1`.";
+ToSymbolicDelta::usage="Convert delta function to C code.";
+SQHamiltonialEvolveCUDAKernel::usage="Generate Hamiltonian Matrix using CUDA.";
 
 progressBar::usage="Labeled dynamic progress bar.";
 MonitorMap::usage="Map with dynamic monitoring progress bar.";
@@ -392,29 +396,37 @@ SyntaxInformation[SQHamiltonialEvolve]={"ArgumentsPattern"->{_,_,_,_,_,_,Options
 SQHamiltonialEvolve[H_SQHamiltonian,particalType_String,initialState_SQInitial,base_,vars_List,{varRanges__List},OptionsPattern[]]:=
 Module[{
 	$tempVars=ToExpression["$$$$"<>ToString[#]]&/@vars,
-	HEncodeFunction,HDecodeFunction,HFunction,HBase,HMatrix,HInitial,Hs,Hj,HEvolution,HWaveFunction,UsedMap,DisplayLabel
+	HEncodeFunction,HDecodeFunction,HFunction,HBase,HMatrix,HInitial,Hs,Hj,HEvolution,HWaveFunction,HFunctionSymbolic,delta
 	},
 	HEncodeFunction=LinearMappingEncodeFunction[Evaluate@vars,varRanges];
 	HDecodeFunction=LinearMappingDecodeFunction[Evaluate@vars,varRanges];
+	HFunctionSymbolic=SQHCalculate[H,Evaluate@{NonCommutativeMultiply@@Reverse[List@@((Hold[base]/.Thread[Rule[vars,$tempVars]])/.{SQQW`Private`Creation->SQQW`Private`Annihilation})],base},particalType,delta];
 	HFunction=Function[
 				Evaluate@(List@@Flatten[{Evaluate@vars,Evaluate@$tempVars}]),
-				Evaluate@SQHCalculate[H,Evaluate@{NonCommutativeMultiply@@Reverse[List@@((Hold[base]/.Thread[Rule[vars,$tempVars]])/.{SQQW`Private`Creation->SQQW`Private`Annihilation})],base},particalType,If[#1==#2,1,0]&]
+				Evaluate[HFunctionSymbolic/.{delta->(If[#1==#2,1,0]&)}]
 				];
 	HBase=Flatten[Table[vars,varRanges],Length[vars]-1];
-	Switch[OptionValue[EnableParallel],
-	True,
+	Switch[OptionValue[Method],
+	"Parallel",
 	If[Length[Kernels[]]==0,LaunchKernels[]];
-	UsedMap=MonitorParallelMap;DisplayLabel="Constructing Hamiltonian Matrix (" <> ToString@Length[Kernels[]] <> "-Kernel Parallel): ";,
-	_,
-	UsedMap=MonitorMap;DisplayLabel="Constructing Hamiltonian Matrix: ";
-	];
-	HMatrix=UsedMap[
-				DisplayLabel,
+	HMatrix=MonitorParallelMap[
+				"Constructing Hamiltonian Matrix (" <> ToString@Length[Kernels[]] <> "-Kernel Parallel): ",
 				HFunction@@Flatten[#]&,
 				Evaluate@Outer[List,HBase,HBase,1],
 				{2}
 				][[2]];
-	If[OptionValue[EnableParallel],CloseKernels[]];
+	CloseKernels[];,
+	"CUDA",
+	HMatrix=SQHamiltonialEvolveCUDAKernel[N@HBase,N@HFunctionSymbolic,vars,$tempVars,delta];,
+	_,
+	HMatrix=MonitorMap[
+				"Constructing Hamiltonian Matrix: ",
+				HFunction@@Flatten[#]&,
+				Evaluate@Outer[List,HBase,HBase,1],
+				{2}
+				][[2]];
+	];
+	
 	NotebookFind[SelectedNotebook[],Uncompress["1:eJxTTMoPCpZnYGBwzs8rLikqTS7JzEtX8EjMzcwpyc/LTMxT8E0sKcqsAAAERA3j"],All,CellContents];
 	NotebookDelete[];
 	CellPrint[
@@ -425,6 +437,7 @@ Module[{
 			}]
 		}]
 	];
+	
 	HInitial=SQInitialCalculate[initialState,HEncodeFunction,HBase,Dimensions[HMatrix][[1]]];
 	{Hs,Hj}=SchurDecomposition[N@HMatrix];
 	NotebookFind[SelectedNotebook[],Uncompress["1:eJxTTMoPChZiYGBwSU3Ozy3IL87MS1fwTSwpyqwAAGs+CLc="],All,CellContents];
@@ -444,6 +457,54 @@ Module[{
 		HBase,
 		Function[t,HWaveFunction[t]]
 	}
+];
+
+
+SQHamiltonialEvolveCUDAKernel[HBase_,HFunctionSymbolic_,vars_,tempVars_,delta_]:=
+Module[{varNum=Length[vars]*2,CDelta,CHFunction,CUDAHKernel,HBaseCUDA,dumpAns},
+	CDelta="__device__ float _d(float _x, float _y) {return (abs(_x-_y)<=(1e-5)?(1.):(0.));}";
+	CHFunction=SymbolicC`ToCCodeString@CUDALink`SymbolicCUDAFunction["CUDAHKernel",
+	{
+		Sequence@@Table[{SymbolicC`CPointerType["float"],"in"<>ToString[i]},{i,1,varNum}],
+		{SymbolicC`CPointerType["float"],"out"},
+		{"mint","len"}
+	},
+	SymbolicC`CBlock[{
+		CUDALink`SymbolicCUDADeclareIndexBlock[1],
+		SymbolicC`CIf[SymbolicC`COperator[Less,{"index","len"}],
+			SymbolicC`CBlock[{
+				SymbolicC`CAssign[
+					SymbolicC`CArray["out","index"],
+					Evaluate[ToSymbolicDelta[HFunctionSymbolic/.Thread[Rule[Join[vars,tempVars],Table["in"<>ToString[i]<>"[index]",{i,1,varNum}]]],delta,"res"]]
+				]
+			}]]
+		}]
+	];
+	CUDAHKernel=CUDALink`CUDAFunctionLoad[
+			CDelta<>"\n"<>CHFunction,
+			"CUDAHKernel",
+			Evaluate@{Sequence@@Table[{"Float",_,"Input"},{i,1,varNum}],{"Float",_,"Output"},_Integer},
+			256
+		];
+	HBaseCUDA=Transpose@Flatten[Map[Flatten,Outer[List,HBase,HBase,1],{2}],1];
+	dumpAns=ConstantArray[0,Length[HBaseCUDA[[1]]]];
+	Partition[CUDAHKernel[Sequence@@HBaseCUDA,dumpAns,Length[HBaseCUDA[[1]]]][[1]],Length[HBase]]
+];
+
+
+ToSymbolicDelta[expr_,delta_,resVar_]:=
+Switch[Head[expr],
+	Integer,ToString[N@expr],
+	Rational,ToString[N@expr],
+	Real,ToString@expr,
+	delta,
+	"_d"<>"("<>ToString[expr[[1]]]<>", "<>ToString[expr[[2]]]<>")",
+	Times,
+	StringRiffle[List@@(ToSymbolicDelta[#,delta,resVar]&/@(expr)),{"(",")*(",")"}],
+	Plus,
+	StringRiffle[List@@(ToSymbolicDelta[#,delta,resVar]&/@(expr)),{"(",")+(",")"}],
+	_,
+	Message[ToSymbolicDelta::exprtype,Head[expr]];
 ];
 
 

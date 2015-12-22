@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[      8803,        241]
-NotebookOptionsPosition[      8404,        224]
-NotebookOutlinePosition[      8746,        239]
-CellTagsIndexPosition[      8703,        236]
+NotebookDataLength[      9101,        245]
+NotebookOptionsPosition[      8699,        228]
+NotebookOutlinePosition[      9043,        243]
+CellTagsIndexPosition[      9000,        240]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -21,6 +21,9 @@ Notebook[{
 Cell[BoxData[{
  RowBox[{
   RowBox[{"Clear", "[", "\"\<Global`*\>\"", "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Needs", "[", "\"\<CUDALink`\>\"", "]"}], 
   ";"}], "\[IndentingNewLine]", 
  RowBox[{"Get", "[", 
   RowBox[{
@@ -35,11 +38,12 @@ Cell[BoxData[{
    3.659318226377237*^9, 3.659318228737175*^9}, {3.6593332702869377`*^9, 
    3.659333270514102*^9}, {3.659336497667048*^9, 3.6593365140449*^9}, {
    3.6593439199909363`*^9, 3.659343920630667*^9}, {3.6593588554777203`*^9, 
-   3.6593588573098764`*^9}, {3.6593595808619776`*^9, 3.6593595907174625`*^9}}],
+   3.6593588573098764`*^9}, {3.6593595808619776`*^9, 
+   3.6593595907174625`*^9}, {3.6597520097815247`*^9, 3.6597520099433937`*^9}}],
 
 Cell[BoxData[{
  RowBox[{
-  RowBox[{"gridSizeL", "=", "10"}], ";", 
+  RowBox[{"gridSizeL", "=", "20"}], ";", 
   RowBox[{"particalType", "=", "\"\<Boson\>\""}], 
   ";"}], "\[IndentingNewLine]", 
  RowBox[{
@@ -102,7 +106,7 @@ Cell[BoxData[{
    3.6593585307731133`*^9, 3.6593586888483353`*^9}, {3.6593588122661066`*^9, 
    3.6593588155535326`*^9}, {3.6593589489667263`*^9, 3.659358952469397*^9}, {
    3.659359598839299*^9, 3.659359599279317*^9}, {3.659405954384821*^9, 
-   3.65940600332488*^9}}],
+   3.65940600332488*^9}, {3.659750762996242*^9, 3.659750765899795*^9}}],
 
 Cell[BoxData[
  RowBox[{
@@ -129,11 +133,11 @@ Cell[BoxData[
        RowBox[{"{", 
         RowBox[{"l2", ",", 
          RowBox[{"l1", "+", "0"}], ",", "gridSizeL"}], "}"}]}], "}"}], ",", 
-     RowBox[{"EnableParallel", "\[Rule]", "False"}]}], "]"}]}], 
-  ";"}]], "Input",
+     RowBox[{"Method", "\[Rule]", "\"\<CUDA\>\""}]}], "]"}]}], ";"}]], "Input",
  CellChangeTimes->{{3.659406006684661*^9, 3.6594060815559177`*^9}, {
   3.6594061385156393`*^9, 3.659406142276852*^9}, {3.6595926895434628`*^9, 
-  3.659592695858*^9}}],
+  3.659592695858*^9}, {3.6597484214701796`*^9, 3.6597484336696014`*^9}, {
+  3.6597507317001925`*^9, 3.6597507320035725`*^9}}],
 
 Cell[BoxData[{
  RowBox[{
@@ -222,8 +226,8 @@ Cell[BoxData[
    3.6593577886113834`*^9, 3.6593577887950487`*^9}, {3.6593579753681355`*^9, 
    3.659358008240636*^9}, 3.6593583805883455`*^9}]
 },
-WindowSize->{927, 1028},
-WindowMargins->{{-7, Automatic}, {Automatic, 0}},
+WindowSize->{927, 1021},
+WindowMargins->{{Automatic, 307}, {Automatic, 41}},
 FrontEndVersion->"10.2 for Microsoft Windows (64-bit) (July 29, 2015)",
 StyleDefinitions->"Default.nb"
 ]
@@ -238,11 +242,11 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[558, 20, 900, 17, 72, "Input"],
-Cell[1461, 39, 2829, 65, 74, "Input"],
-Cell[4293, 106, 1043, 29, 76, "Input"],
-Cell[5339, 137, 1250, 37, 112, "Input"],
-Cell[6592, 176, 1808, 46, 172, "Input"]
+Cell[558, 20, 1050, 21, 92, "Input"],
+Cell[1611, 43, 2875, 65, 74, "Input"],
+Cell[4489, 110, 1142, 29, 76, "Input"],
+Cell[5634, 141, 1250, 37, 112, "Input"],
+Cell[6887, 180, 1808, 46, 172, "Input"]
 }
 ]
 *)
