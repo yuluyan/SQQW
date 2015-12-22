@@ -1,5 +1,8 @@
 # SQQW - Second Quantization Quantum Walk
-Still under construction.
+##Update
+* Parallel and CUDA
+* Minor bugs fixed
+* New UI
 
 ##Development environment
 Windows 10 Home
