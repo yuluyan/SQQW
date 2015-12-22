@@ -77,6 +77,7 @@ InitialInfiniteSum::usage="Wrapper for infinite sum in Initial.";
 Options[SQHamiltonialEvolve]={Method->"CPU"};
 SetOptions[SQHamiltonialEvolve,Method->"CPU"];
 SQHamiltonialEvolve::usage="Evolve the Hamiltonian accordingly.";
+SQHamiltonialEvolve::nocuda="CUDA is not working.";
 
 ToSymbolicDelta::exprtype="Unknown type of expression: `1`.";
 ToSymbolicDelta::usage="Convert delta function to C code.";
@@ -417,7 +418,18 @@ Module[{
 				][[2]];
 	CloseKernels[];,
 	"CUDA",
-	HMatrix=SQHamiltonialEvolveCUDAKernel[N@HBase,N@HFunctionSymbolic,vars,$tempVars,delta];,
+	CellPrint[
+	CellGroup[{
+		Row[{
+			TextCell["                ","Text"],
+			TextCell["Constructing Hamiltonian Matrix (CUDA):","Subsection"],
+			ExpressionCell[ProgressIndicator[Appearance->"Percolate"]]
+		}]
+	}]];
+	If[!TrueQ[CUDALink`CUDAQ[]],
+		Message[SQHamiltonialEvolve::nocuda];Return[$Failed];,
+		HMatrix=SQHamiltonialEvolveCUDAKernel[N@HBase,N@HFunctionSymbolic,vars,$tempVars,delta];
+	];,
 	_,
 	HMatrix=MonitorMap[
 				"Constructing Hamiltonian Matrix: ",
@@ -443,7 +455,7 @@ Module[{
 	NotebookFind[SelectedNotebook[],Uncompress["1:eJxTTMoPChZiYGBwSU3Ozy3IL87MS1fwTSwpyqwAAGs+CLc="],All,CellContents];
 	NotebookDelete[];
 	HEvolution[t_]=MapIndexed[If[Equal@@#2,Exp[-I #1 t],#1]&,Hj,{2}];
-	HWaveFunction[t_]:=Hs.(HEvolution[t].(Conjugate[Transpose[Hs]].(N@HInitial)));
+	HWaveFunction[t_]:=Hs.(HEvolution[t].Evaluate[(Conjugate[Transpose[Hs]].(N@HInitial))]);
 	CellPrint[
 		CellGroup[{
 			Row[{
