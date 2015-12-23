@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-(*SQQW Ver1.0*)
+(*SQQW Ver 1.0.3*)
 (*2015 Dec 18*)
 
 (*
@@ -12,6 +12,10 @@
 	calculations of Quantum Walk in the form of Second Quanti-
 	zation. This package works for a wide range of Hamitonians 
 	and Initial Conditions.
+	This package utilizes the official Mathematica package
+	'Notation' to make the input and display of operators the
+	same as them in writing. So please check if 'Notation' package
+	is available in your environment.
 	This package is still under construction. Please contact
 	me if you have any problem or find bugs.
 *)
@@ -28,8 +32,6 @@ BeginPackage["SQQW`",{"Notation`"}];
 
 $FineDisplayCondition=False;
 EnableFineDisplay::usage="Create some shortcuts for Creation and Annihilation operators.";
-EnableFineDisplay::off="Fine Display is off.";
-EnableFineDisplay::on="Fine Display is on.";
 
 WickExpand::usage="Wick expand of operators.";
 NormalOrder::usage="Wrapper for operators in noraml order.";
@@ -41,47 +43,30 @@ Contraction::usage="Wrapper for extracted contractions.";
 
 $ContractionReductionCondition=False;
 EnableContractionReduction::usage="Reduce the contractions of Creation and Annihilation operators.";
-EnableContractionReduction::off="Contraction Reduction is off.";
-EnableContractionReduction::on="Contraction Reduction is on.";
 
 VacuumMean::usage="Calculate the vacuum mean of operators.";
 SQQWInitialize::usage="Enable Fine Dispaly and Contraction Reduction.";
 
-InfiniteSubstitute::nosol="No solution for some delta-functions.";
 InfiniteSubstitute::usage="Substitute one delta-function variable in a product.";
-
 InfiniteSubstituteList::usage="Substitute a list of delta-function variables in a product.";
-
-InfiniteSumDelta::exprtype="Unknown type of expression: `1` in (`2`).";
 InfiniteSumDelta::usage="Substitute a list of delta-function variables in a sum of products.";
 HInfiniteSum::usage="Wrapper for infinite sum in Hamiltonian.";
 HTerm::usage="Wrapper for term in Hamiltonian.";
 SQHamiltonian::usage="Wrapper for Hamiltonian.";
-
 SQHCalculate::usage="Calculate algebraic expression of Hamiltonian.";
-SQHCalculate::exprtype="Unknown type of expression: `1`.";
 
-LinearMappingEncodeFunction::nomatch="Numbers of variables and ranges do not match.";
-LinearMappingEncodeFunction::usage="Return an encoding function for multiple indexes.";
-LinearMappingDecodeFunction::nomatch="Numbers of variables and ranges do not match.";
-LinearMappingDecodeFunction::usage="Return a decoding function for multiple indexes.";
-
-SQInitialCalculate::noimpl="This type has not been implemented.";
-SQInitialCalculate::exprtype="Unknown type of expression: `1`.";
 SQInitialCalculate::usage="Calculate vector of Initial.";
-
 SQInitial::usage="Wrapper for Initial.";
 InitialTerm::usage="Wrapper for term in Initial.";
 InitialInfiniteSum::usage="Wrapper for infinite sum in Initial.";
 
-Options[SQHamiltonialEvolve]={Method->"CPU"};
-SetOptions[SQHamiltonialEvolve,Method->"CPU"];
 SQHamiltonialEvolve::usage="Evolve the Hamiltonian accordingly.";
-SQHamiltonialEvolve::nocuda="CUDA is not working.";
 
-ToSymbolicDelta::exprtype="Unknown type of expression: `1`.";
 ToSymbolicDelta::usage="Convert delta function to C code.";
 SQHamiltonialEvolveCUDAKernel::usage="Generate Hamiltonian Matrix using CUDA.";
+
+LinearMappingEncodeFunction::usage="Return an encoding function for multiple indexes.";
+LinearMappingDecodeFunction::usage="Return a decoding function for multiple indexes.";
 
 progressBar::usage="Labeled dynamic progress bar.";
 MonitorMap::usage="Map with dynamic monitoring progress bar.";
@@ -91,7 +76,10 @@ MonitorParallelMap::usage="ParallelMap with dynamic monitoring progress bar.";
 Begin["`Private`"];
 
 
+EnableFineDisplay::off="Fine Display is off.";
+EnableFineDisplay::on="Fine Display is on.";
 SyntaxInformation[EnableFineDisplay]={"ArgumentsPattern"->{_}};
+
 EnableFineDisplay[switch_?BooleanQ]:=
 Module[{},
 	Which[
@@ -120,7 +108,10 @@ Module[{},
 ];
 
 
+EnableContractionReduction::off="Contraction Reduction is off.";
+EnableContractionReduction::on="Contraction Reduction is on.";
 SyntaxInformation[EnableContractionReduction]={"ArgumentsPattern"->{_}};
+
 EnableContractionReduction[switch_?BooleanQ]:=
 Module[{},
 	Which[
@@ -199,7 +190,9 @@ Module[{},
 ];
 
 
+InfiniteSubstitute::nosol="No solution for some delta-functions.";
 SyntaxInformation[InfiniteSubstitute]={"ArgumentsPattern"->{_,_,_},"LocalVariables"->{"Solve",{2,3}}};
+
 InfiniteSubstitute[expr_,deltaFunction_,var_]:=
 If[Head[expr]==deltaFunction,
 	If[!MemberQ[Level[expr,1],var],expr,1]
@@ -230,7 +223,9 @@ InfiniteSubstituteList[expr_Times,deltaFunction_,vars_List]:=
 	Fold[InfiniteSubstitute[#1,deltaFunction,#2]&,expr,vars];
 
 
+InfiniteSumDelta::exprtype="Unknown type of expression: `1` in (`2`).";
 SyntaxInformation[InfiniteSumDelta]={"ArgumentsPattern"->{_,_,_},"LocalVariables"->{"Solve",{2,3}}};
+
 InfiniteSumDelta[expr_,deltaFunction_,vars_List]:=
 Module[{$productList},
 	Switch[Head[expr],
@@ -261,7 +256,9 @@ HTerm[HoldPattern@Plus[pro__]]:=
 SQHamiltonian[]=0;
 
 
+SQHCalculate::exprtype="Unknown type of expression: `1`.";
 SyntaxInformation[SQHCalculate]={"ArgumentsPattern"->{_,{_,_},_,_}};
+
 SQHCalculate[SQHamiltonian[expr_],{baseL_,baseR_},"Boson",deltaFunction_]:=
 Module[{d},
 	d[state1_List,state2_List]/;Length[state1]==Length[state2]:=Inner[d,state1,state2,Times];
@@ -339,19 +336,34 @@ Module[{$varNum=Length[varList],$rangeList={ranges},$eachNumber},
 
 
 (*These functions are not safe since they do not perform range check*)
+Options[LinearMappingEncodeFunction]={ValidationCheck->False};
+SetOptions[LinearMappingEncodeFunction,ValidationCheck->False];
+LinearMappingEncodeFunction::nomatch="Numbers of variables and ranges do not match.";
+LinearMappingEncodeFunction::outbound="Input indexes are out of bounds.";
 SyntaxInformation[LinearMappingEncodeFunction]={"LocalVariables"->{"Integrate",{2,Infinity}}};
-LinearMappingEncodeFunction[varList_List,ranges__List]:=
+
+LinearMappingEncodeFunction[varList_List,ranges__List,OptionsPattern[]]:=
 Module[{$varNum=Length[varList],$rangeList={ranges},$table},
 	If[Length[$rangeList]!=$varNum,
 		Message[LinearMappingEncodeFunction::nomatch];Return[$Failed]
 	];
 	$table=Flatten[Table[varList,ranges],$varNum-1];
-	Function[Evaluate@varList,
-		Position[Evaluate@$table,varList][[1,1]]
+	If[OptionValue[ValidationCheck],
+		Function[Evaluate@varList,
+			If[True,
+				Position[Evaluate@$table,varList][[1,1]],
+				Message[LinearMappingEncodeFunction::outbound];$Failed
+			]
+		],
+		Function[Evaluate@varList,
+			Position[Evaluate@$table,varList][[1,1]]
+		]
 	]
 ];
 
+LinearMappingDecodeFunction::nomatch="Numbers of variables and ranges do not match.";
 SyntaxInformation[LinearMappingDecodeFunction]={"LocalVariables"->{"Integrate",{2,Infinity}}};
+
 LinearMappingDecodeFunction[varList_List,ranges__List]:=
 Module[{$varNum=Length[varList],$rangeList={ranges},$table},
 	If[Length[$rangeList]!=$varNum,
@@ -364,9 +376,10 @@ Module[{$varNum=Length[varList],$rangeList={ranges},$table},
 ];
 
 
-SQInitial[]=0;
-
+SQInitialCalculate::noimpl="This type has not been implemented.";
+SQInitialCalculate::exprtype="Unknown type of expression: `1`.";
 SyntaxInformation[SQInitialCalculate]={"ArgumentsPattern"->{_,_,_,_}};
+
 SQInitialCalculate[SQInitial[expr_],HEncodeFunction_,HBase_,dim1_]:=
 Module[{},
 	Switch[Head[expr],
@@ -393,7 +406,11 @@ Module[{},
 SyntaxInformation[InitialInfiniteSum]={"ArgumentsPattern"->{_,_},"LocalVariables"->{"Solve",{2}}};
 
 
+Options[SQHamiltonialEvolve]={Method->"CPU"};
+SetOptions[SQHamiltonialEvolve,Method->"CPU"];
+SQHamiltonialEvolve::nocuda="CUDA is not working.";
 SyntaxInformation[SQHamiltonialEvolve]={"ArgumentsPattern"->{_,_,_,_,_,_,OptionsPattern[]},"LocalVariables"->{"Solve",{5,6}}};
+
 SQHamiltonialEvolve[H_SQHamiltonian,particalType_String,initialState_SQInitial,base_,vars_List,{varRanges__List},OptionsPattern[]]:=
 Module[{
 	$tempVars=ToExpression["$$$$"<>ToString[#]]&/@vars,
@@ -504,6 +521,7 @@ Module[{varNum=Length[vars]*2,CDelta,CHFunction,CUDAHKernel,HBaseCUDA,dumpAns},
 ];
 
 
+ToSymbolicDelta::exprtype="Unknown type of expression: `1`.";
 ToSymbolicDelta[expr_,delta_,resVar_]:=
 Switch[Head[expr],
 	Integer,ToString[N@expr],
