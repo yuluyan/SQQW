@@ -1,15 +1,15 @@
 # SQQW - Second Quantization Quantum Walk
-##Update
+## Update
 * Parallel and CUDA
 * Minor bugs fixed
 * New UI
 
-##Development environment
+## Development environment
 Windows 10 Home
 
 Wolfram Mathematica 10.2
 
-##Functionality
+## Functionality
 * Wick expand of operators
   * Symetric expand
   * Antisymetric expand
@@ -30,8 +30,8 @@ Wolfram Mathematica 10.2
     * Fermion
     * Hard-core Boson (Not implemented)
 
-##Example - Nearest interaction
-###Initialization
+## Example - Nearest interaction
+### Initialization
 Assume the package file (SQQW.wl) is in the same category of your notebook.
 ```Mathematica
 Clear["Global`*"];
@@ -39,8 +39,8 @@ Get[NotebookDirectory[] <> "SQQW.wl"]
 SQQWInitialize[];
 ```
 
-###Define Quantum Walk
-####Hamiltonian
+### Define Quantum Walk
+#### Hamiltonian
 ```Mathematica
 H1 = SQHamiltonian[
   -HInfiniteSum[Subscript[SuperDagger[a], l + 1] ** Subscript[a, l] + Subscript[SuperDagger[a], l] ** Subscript[a, l + 1], {l}]
@@ -52,24 +52,24 @@ This may seems odd here but in Mathematica it is displayed in the way of writing
 
 Note that the double stars mean non-commutable multiplication.
 
-####Initial state
+#### Initial state
 ```Mathematica
 Initial = SQInitial[0.5 InitialTerm[{0, 1}] + 0.5 InitialTerm[{2, 3}]];
 ```
 This means the initial state is a superposition.
 
-####Partical type
+#### Partical type
 ```Mathematica
 particalType = "Boson";
 ```
 Currently, Boson and Fermion are supported.
 
-####Matrix base
+#### Matrix base
 ```Mathematica
 base = Subscript[SuperDagger[a], l1] ** Subscript[SuperDagger[a], l2];
 ```
 
-###Simulation
+### Simulation
 ```Mathematica
 {{fe, fd}, H1Base, H1WaveFunction} = 
   SQHamiltonialEvolve[
@@ -86,8 +86,8 @@ After calculation, ```fe``` and ```fd``` will be assigned to a encoding and deco
 ```H1Base``` is assigned to a vector of bases.
 ```H1WaveFunction``` is assigned to the coresponding wave function under that base. Note that ```H1WaveFunction``` is a function of time.
 
-###Visualization
-####Correlation
+### Visualization
+#### Correlation
 ```Mathematica
 H1CorrelationHalf[t_] := 
   Abs[Normal[
@@ -101,7 +101,7 @@ H1CorrelationHalf[t_] :=
 H1Correlation[t_] := (# + Transpose[#]) &[H1CorrelationHalf[t]];
 ```
 
-####Plot Correlation
+#### Plot Correlation
 ```Mathematica
 Manipulate[
  MatrixPlot[
